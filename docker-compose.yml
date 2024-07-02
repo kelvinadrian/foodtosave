@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "Admin123!"
+      MYSQL_HOST: "foodtosave/mysql"
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: "foodtosavedb"     # Nome do banco de dados
+      MYSQL_USER: "kelvin"                 # Usuário do banco de dados
+      MYSQL_PASSWORD: "Admin123!"         # Senha do usuário do banco de dados
+    ports:
+      - "3306:3306"                      # Porta do MySQL
+    volumes:
+      - mysqldata:/var/lib/mysql         # Volume para persistência de dados
+
+  redis:
+    image: "redis:latest"
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysqldata:
+    driver: local
