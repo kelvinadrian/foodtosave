@@ -3,14 +3,15 @@ package br.com.foodtosave.core.entity;
 import br.com.foodtosave.adapter.dto.request.DadosAtualizarCliente;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
-@Table(name = "cliente")
-@Entity(name= "Cliente")
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
+@RedisHash(value = "cliente")
 public class Cliente {
 
     @Id

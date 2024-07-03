@@ -82,7 +82,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     @Override
     public Cliente getReferenceById(Long id) {
         String sql = "SELECT * FROM cliente WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
+        List<Cliente> clientes =  jdbcTemplate.query(sql, new Object[]{id}, (rs, rowNum) -> {
             Long idCliente = rs.getLong("id");
             String nome = rs.getString("nome");
             String email = rs.getString("email");
@@ -97,6 +97,12 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             Endereco endereco = new Endereco(logradouro, bairro, cep, cidade, uf, complemento, numero);
             return new Cliente(idCliente, nome, email, endereco);
         });
+
+        if (clientes.isEmpty()) {
+            return null; // Ou lançar uma exceção, dependendo do contexto
+        } else {
+            return clientes.get(0); // Retorna o primeiro cliente encontrado
+        }
     }
 
     @Override

@@ -7,24 +7,26 @@ import br.com.foodtosave.adapter.dto.response.DadosResponseCliente;
 import br.com.foodtosave.adapter.interfaces.gateway.ClienteGateway;
 import br.com.foodtosave.adapter.interfaces.usecase.ClienteUseCase;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/cliente")
 public class ClienteController {
 
     final ClienteGateway clienteGateway;
     final ClienteUseCase clienteUseCase;
-
-    public ClienteController(ClienteGateway clienteGateway, ClienteUseCase clienteUseCase) {
-        this.clienteGateway = clienteGateway;
-        this.clienteUseCase = clienteUseCase;
-    }
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid DadosCadastroCliente dadosCadastroCliente, UriComponentsBuilder uriComponentsBuilder){
@@ -50,7 +52,7 @@ public class ClienteController {
         var cliente = clienteUseCase.getReferenceById(dados.id(), clienteGateway);
 
         if(cliente == null){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente com o ID " + dados.id() + " não encontrado.");
         }
 
         clienteUseCase.atualizar(cliente, dados);
@@ -70,7 +72,7 @@ public class ClienteController {
         var cliente = clienteUseCase.getReferenceById(id, clienteGateway);
 
         if(cliente == null){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente com o ID " + id + " não encontrado.");
         }
 
         return ResponseEntity.ok(ClienteBuilder.fromDomainToDetail(cliente));
